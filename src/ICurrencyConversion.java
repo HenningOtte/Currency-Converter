@@ -3,5 +3,5 @@ public interface ICurrencyConversion {
 
     String[] getConverters();
 
-    void performConversion();
+    double performConversion(double amount, String sourceCurrency, String targetCurrency, String converter);
 }

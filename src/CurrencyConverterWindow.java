@@ -1,6 +1,8 @@
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -8,13 +10,18 @@ public class CurrencyConverterWindow {
 
     private final ICurrencyConversion iCurrencyConversion;
 
+    private JTextField currencyAmount;
+    private JComboBox<String> sourceCurrency;
+    private JLabel resultLabel;
+
     public CurrencyConverterWindow(ICurrencyConversion iCurrencyConversion) {
         this.iCurrencyConversion = iCurrencyConversion;
+
         JFrameWindow window = new JFrameWindow();
 
         window.add(createOriginalValuePanel(this.iCurrencyConversion), BorderLayout.NORTH);
         window.add(createTargetValuePanel(this.iCurrencyConversion), BorderLayout.CENTER);
-        window.add(createResultPanel(), BorderLayout.SOUTH);
+        window.add(this.createResultPanel(), BorderLayout.SOUTH);
 
         window.setVisible(true);
     }
@@ -29,13 +36,13 @@ public class CurrencyConverterWindow {
         TitledBorder title =  BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"Ausgangswert");
         jPanel.setBorder(title);
 
-        JTextField jTextField = new JTextField(10);
+        this.currencyAmount = new JTextField(10);
 
-        JComboBox<String> currency = new JComboBox<>();
-        currency.setModel(new DefaultComboBoxModel<>(currenciesMethods.getCurrencies()));
+        this.sourceCurrency = new JComboBox<>();
+        this.sourceCurrency.setModel(new DefaultComboBoxModel<>(currenciesMethods.getCurrencies()));
 
-        jPanel.add(jTextField);
-        jPanel.add(currency);
+        jPanel.add(this.currencyAmount);
+        jPanel.add(this.sourceCurrency);
 
         return jPanel;
     }
@@ -56,7 +63,11 @@ public class CurrencyConverterWindow {
         jSpinner.setEditor(new JSpinner.DateEditor(jSpinner, "yyyy-MM-dd"));
 
         JButton jButton = new JButton("Umrechnen");
-        jButton.addActionListener(e -> iCurrencyConversion.performConversion());
+
+        jButton.addActionListener(e -> {
+            double result = iCurrencyConversion.performConversion(Integer.parseInt(currencyAmount.getText()), (String) this.sourceCurrency.getSelectedItem(), (String) currency.getSelectedItem(), (String) converter.getSelectedItem());
+            this.resultLabel.setText("Ergebnis: " + String.format("%.2f", result));
+        });
 
         jPanel.add(currency);
         jPanel.add(converter);
@@ -69,12 +80,13 @@ public class CurrencyConverterWindow {
     private JPanel createResultPanel() {
         final JPanel jPanel = new JPanel();
         jPanel.setLayout(new FlowLayout());
+
         TitledBorder title =  BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"Ergebnis");
         jPanel.setBorder(title);
 
-        JLabel result = new JLabel("Ergebnis");
+        this.resultLabel = new JLabel("Ergebnis");
 
-        jPanel.add(result);
+        jPanel.add(this.resultLabel);
 
         return jPanel;
     }
