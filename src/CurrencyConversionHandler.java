@@ -6,9 +6,9 @@ public class CurrencyConversionHandler implements ICurrencyConversion {
     private final Map<String, CurrencyConverter> converters = new HashMap<>();
 
     CurrencyConversionHandler() {
-        converters.put("Echtzeit", null);
+        converters.put("Echtzeit", new LatestCurrencyConverter());
         converters.put("Historisch", null);
-        converters.put("Fix", new FixedCurrencyConverter());
+        converters.put("Fix", new LatestCurrencyConverter());
     }
 
     @Override

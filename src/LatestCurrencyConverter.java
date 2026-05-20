@@ -5,12 +5,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class LatestCurrencyConverter implements CurrencyConverter {
-    // fca_live_RnwtzVgYRA9qlpegCia189guOBgXN2Xqz4cdlAtv
-    // https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_RnwtzVgYRA9qlpegCia189guOBgXN2Xqz4cdlAtv
-    // https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_RnwtzVgYRA9qlpegCia189guOBgXN2Xqz4cdlAtv&currencies=EUR%2CUSD%2CCAD
-
-    // https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_RnwtzVgYRA9qlpegCia189guOBgXN2Xqz4cdlAtv&currencies=EUR%2CUSD%2CCAD
-
 
     @Override
     public double convertCurrency(double amount, String sourceCurrency, String targetCurrency) {
@@ -38,11 +32,21 @@ public class LatestCurrencyConverter implements CurrencyConverter {
             }
 
             bufferedReader.close();
-            System.out.println(response);
+
+            final double exchangeRate = extractExchangeRate(response, targetCurrency);
+            return amount * exchangeRate;
+
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
 
         return 0;
+    }
+
+    private double extractExchangeRate(String data, String targetCurrency) {
+        String[] currencySplit  = data.split("\"" + targetCurrency + "\":");
+        String[] valueSplit  = currencySplit[1].split("\\}");
+
+        return Double.parseDouble(valueSplit[0]);
     }
 }

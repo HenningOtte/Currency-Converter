@@ -9,11 +9,12 @@ import java.util.Set;
 public class CurrencyConverterWindow {
 
     private final ICurrencyConversion iCurrencyConversion;
-
     private JTextField currencyAmount;
     private JComboBox<String> sourceCurrency;
     private JLabel resultLabel;
 
+    // Initializes the converter window and sets up
+    // all panels required for the currency conversion UI.
     public CurrencyConverterWindow(ICurrencyConversion iCurrencyConversion) {
         this.iCurrencyConversion = iCurrencyConversion;
 
@@ -26,10 +27,15 @@ public class CurrencyConverterWindow {
         window.setVisible(true);
     }
 
+    // Starts the application and initializes the
+    // CurrencyConverterWindow with a CurrencyConversionHandler
+    // that contains all available converters.
     public static void main(String[] args) {
         new CurrencyConverterWindow(new CurrencyConversionHandler());
     }
 
+    // Creates the panel for entering the original amount
+    // and selecting the source currency.
     private JPanel createOriginalValuePanel(ICurrencyConversion currenciesMethods) {
         final JPanel jPanel = new JPanel();
         jPanel.setLayout(new FlowLayout());
@@ -47,6 +53,9 @@ public class CurrencyConverterWindow {
         return jPanel;
     }
 
+    // Creates the panel for selecting the target currency,
+    // converter type, and conversion date, and handles
+    // the currency conversion when the button is pressed.
     private JPanel createTargetValuePanel(ICurrencyConversion currenciesMethods) {
         final JPanel jPanel = new JPanel();
         jPanel.setLayout(new FlowLayout());
@@ -64,6 +73,10 @@ public class CurrencyConverterWindow {
 
         JButton jButton = new JButton("Umrechnen");
 
+
+        // Uses the selected converter to load the matching
+        // CurrencyConverter from the HashMap and perform
+        // the currency conversion.
         jButton.addActionListener(e -> {
             double result = iCurrencyConversion.performConversion(Integer.parseInt(currencyAmount.getText()), (String) this.sourceCurrency.getSelectedItem(), (String) currency.getSelectedItem(), (String) converter.getSelectedItem());
             this.resultLabel.setText("Ergebnis: " + String.format("%.2f", result));
@@ -77,6 +90,7 @@ public class CurrencyConverterWindow {
         return jPanel;
     }
 
+    // Creates the panel used to display the currency conversion result.
     private JPanel createResultPanel() {
         final JPanel jPanel = new JPanel();
         jPanel.setLayout(new FlowLayout());
