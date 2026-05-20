@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import java.util.Set;
 public class CurrencyConverterWindow {
 
     private final ICurrencyConversion iCurrencyConversion;
+
     private JTextField currencyAmount;
     private JComboBox<String> sourceCurrency;
     private JLabel resultLabel;
@@ -25,6 +27,8 @@ public class CurrencyConverterWindow {
         window.add(this.createResultPanel(), BorderLayout.SOUTH);
 
         window.setVisible(true);
+
+        window.pack();
     }
 
     // Starts the application and initializes the
@@ -71,13 +75,17 @@ public class CurrencyConverterWindow {
         JSpinner jSpinner = new JSpinner(new SpinnerDateModel());
         jSpinner.setEditor(new JSpinner.DateEditor(jSpinner, "yyyy-MM-dd"));
 
-        JButton jButton = new JButton("Umrechnen");
-
-
         // Uses the selected converter to load the matching
         // CurrencyConverter from the HashMap and perform
         // the currency conversion.
+        JButton jButton = new JButton("Umrechnen");
+
         jButton.addActionListener(e -> {
+            // Retrieves the selected date from the JSpinner
+            // and passes it to the CurrencyConversionHandler
+            // before performing the currency conversion.
+            this.iCurrencyConversion.setDate((Date) jSpinner.getValue());
+
             double result = iCurrencyConversion.performConversion(Integer.parseInt(currencyAmount.getText()), (String) this.sourceCurrency.getSelectedItem(), (String) currency.getSelectedItem(), (String) converter.getSelectedItem());
             this.resultLabel.setText("Ergebnis: " + String.format("%.2f", result));
         });
