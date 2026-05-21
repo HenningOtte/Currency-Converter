@@ -13,7 +13,10 @@ public class CurrencyConverterWindow {
 
     private JTextField currencyAmount;
     private JComboBox<String> sourceCurrency;
+    private JComboBox<String> targetCurrency;
+    private JComboBox<String> conversionMode;
     private JLabel resultLabel;
+
 
     // Initializes the converter window and sets up
     // all panels required for the currency conversion UI.
@@ -66,11 +69,13 @@ public class CurrencyConverterWindow {
         TitledBorder title =  BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"Zielwährung");
         jPanel.setBorder(title);
 
-        JComboBox<String> currency = new JComboBox<>();
-        currency.setModel(new DefaultComboBoxModel<>(currenciesMethods.getCurrencies()));
+        this.targetCurrency = new JComboBox<>();
+        this.targetCurrency.setModel(new DefaultComboBoxModel<>(currenciesMethods.getCurrencies()));
 
-        JComboBox<String> converter = new JComboBox<>();
-        converter.setModel(new DefaultComboBoxModel<>(currenciesMethods.getConverters()));
+        // JComboBox<String> converter = new JComboBox<>();
+        // converter.setModel(new DefaultComboBoxModel<>(currenciesMethods.getConverters()));
+        this.conversionMode =  new JComboBox<>();
+        this.conversionMode.setModel(new DefaultComboBoxModel<>(currenciesMethods.getConverters()));
 
         JSpinner jSpinner = new JSpinner(new SpinnerDateModel());
         jSpinner.setEditor(new JSpinner.DateEditor(jSpinner, "yyyy-MM-dd"));
@@ -86,16 +91,33 @@ public class CurrencyConverterWindow {
             // before performing the currency conversion.
             this.iCurrencyConversion.setDate((Date) jSpinner.getValue());
 
-            double result = iCurrencyConversion.performConversion(Integer.parseInt(currencyAmount.getText()), (String) this.sourceCurrency.getSelectedItem(), (String) currency.getSelectedItem(), (String) converter.getSelectedItem());
-            this.resultLabel.setText("Ergebnis: " + String.format("%.2f", result));
+            int currencyInput = processCurrencyInput();
+
+            this.processCurrencyInput();
         });
 
-        jPanel.add(currency);
-        jPanel.add(converter);
+        jPanel.add(this.targetCurrency);
+        jPanel.add(this.conversionMode);
         jPanel.add(jSpinner);
         jPanel.add(jButton);
 
         return jPanel;
+    }
+
+    // Validates the user input, performs the currency conversion,
+    // and updates the result label with the converted value or an error message.
+    private int processCurrencyInput() {
+        int currencyInput = 0;
+        try {
+            currencyInput = Integer.parseInt(currencyAmount.getText());
+            double result = iCurrencyConversion.performConversion(currencyInput, (String) this.sourceCurrency.getSelectedItem(), (String) this.targetCurrency.getSelectedItem(), (String) this.conversionMode.getSelectedItem());
+
+            this.resultLabel.setText("Result: " + String.format("%.2f", result) + " " + (String) this.targetCurrency.getSelectedItem());
+        } catch (Exception e) {
+            this.resultLabel.setText("Please enter a number!");
+            currencyAmount.setText("");
+        }
+        return currencyInput;
     }
 
     // Creates the panel used to display the currency conversion result.
